@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="he">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Manchie In The Kitchen</title>
+    <style>
+      /* =======================================================================
+         Basic Reset and Global Styles 
+         ======================================================================= */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #fbfafc 0%, #e6e9f0 100%);
+        color: #333;
+        direction: rtl;
+        padding: 20px;
+      }
+      /* =======================================================================
+         Header and Language Selector
+         ======================================================================= */
+      header {
+        position: relative;
+        text-align: center;
+        padding: 30px 20px;
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+      header h1 {
+        font-size: 2.5em;
+        color: #fff;
+      }
+      header h2 {
+        font-size: 1.3em;
+        color: #fff;
+        margin-top: 10px;
+      }
+      #langSelect {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        padding: 6px 10px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        background-color: #f0a500;
+        color: #fff;
+        cursor: pointer;
+      }
+      /* =======================================================================
+         Navigation / Search Bar
+         ======================================================================= */
+      nav {
+        text-align: center;
+        margin: 20px 0;
+      }
+      nav input[type="text"] {
+        width: 80%;
+        max-width: 600px;
+        padding: 10px 15px;
+        font-size: 1em;
+        border: 2px solid #f0a500;
+        border-radius: 25px;
+        outline: none;
+      }
+      nav button {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        margin-left: 10px;
+        border-radius: 25px;
+        background: linear-gradient(135deg, #f0a500, #d35400);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+      nav button:hover {
+        transform: scale(1.05);
+      }
+      /* =======================================================================
+         Search Feedback and Reset Button
+         ======================================================================= */
+      #searchFeedback {
+        margin-top: 10px;
+        font-size: 1em;
+        color: #555;
+      }
+      #resetButton {
+        padding: 8px 16px;
+        font-size: 0.9em;
+        border: none;
+        margin-top: 10px;
+        border-radius: 25px;
+        background: linear-gradient(135deg, #f0a500, #d35400);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        display: none;
+      }
+      #resetButton:hover {
+        transform: scale(1.05);
+      }
+      /* =======================================================================
+         Main Content and Recipe Cards
+         ======================================================================= */
+      main {
+        max-width: 1200px;
+        margin: auto;
+      }
+      .recipe {
+        background-color: #fff;
+        border: 2px solid #f0a500;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+        padding-bottom: 20px;
+      }
+      .recipe img {
+        width: 90%;
+        display: block;
+        margin: 0 auto;
+      }
+      .recipe h2 {
+        text-align: center;
+        padding: 15px 20px;
+        font-size: 1.8em;
+        color: #d35400;
+        border-bottom: 1px solid #ddd;
+      }
+      .section {
+        padding: 15px 20px;
+        line-height: 1.6;
+      }
+      .section h3 {
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        color: #f0a500;
+      }
+      .section ul,
+      .section ol {
+        margin-left: 20px;
+      }
+      .section li {
+        margin-bottom: 8px;
+      }
+      /* =======================================================================
+         Footer
+         ======================================================================= */
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 0.9em;
+        color: #777;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+      }
+      /* =======================================================================
+         Responsive Adjustments
+         ======================================================================= */
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 2em;
+        }
+        header h2 {
+          font-size: 1em;
+          margin-top: 8px;
+        }
+        nav input[type="text"] {
+          width: 90%;
+          padding: 8px 12px;
+          font-size: 0.9em;
+        }
+        nav button, #resetButton {
+          padding: 8px 16px;
+          font-size: 0.9em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 id="siteTitle">Manchie In The Kitchen</h1>
+      <h2 id="siteSubtitle">
+        כאן תמצאו את המתכונים שאני הכי אוהב להכין - עם תמונות, הוראות ברורות ואהבה לאוכל.
+      </h2>
+      <select id="langSelect">
+        <option value="he">עברית</option>
+        <option value="en">English</option>
+      </select>
+    </header>
+
+    <nav>
+      <input type="text" id="recipeSearch" placeholder="חפש מתכונים..." />
+      <button id="searchButton">חפש מתכון</button>
+      <div id="searchFeedback"></div>
+      <button id="resetButton">חזור לכל המתכונים</button>
+    </nav>
+
+    <main>
+      <!-- Recipe Sections -->
+      <section class="recipe" id="cookies">
+        <img src="images/cookies.jpg" alt="עוגיות שוקולד צ'יפס עם עדדים" />
+        <h2 id="cookiesTitle">עוגיות שוקולד צ'יפס עם עדדים</h2>
+        <div class="section details" id="cookiesDetails">
+          <p><strong>קטגוריה:</strong> קינוחים</p>
+          <p><strong>משך הכנה:</strong> 30-60 דקות</p>
+          <p><strong>משך בישול:</strong> שעה - שעה וחצי</p>
+          <p><strong>משך כללי:</strong> כשעתיים</p>
+          <p><strong>תפוקה:</strong> כ-40 עוגיות</p>
+        </div>
+        <div class="section ingredients" id="cookiesIngredients">
+          <h3>מרכיבים</h3>
+          <ul>
+            <li>200 גרם חמאה</li>
+            <li>200 גרם (1 כוס) סוכר לבן</li>
+            <li>50 גרם (1/4 כוס) סוכר חום</li>
+            <li>1 ביצה L</li>
+            <li>1 כפית תמצית וניל</li>
+            <li>300 גרם (2 כוסות + כף גדושה) קמח לבן</li>
+            <li>1 כפית סודה לשתייה</li>
+            <li>50 גרם עדדים צבעוניים (לא חובה)</li>
+            <li>2 וחצי טבלאות שוקולד</li>
+          </ul>
+        </div>
+        <div class="section instructions" id="cookiesInstructions">
+          <h3>הוראות הכנה</h3>
+          <ol>
+            <li>ממיסים את החמאה עד שהיא רכה.</li>
+            <li>מערבבים את הסוכר הלבן והחום וטורפים היטב.</li>
+            <li>מוסיפים ביצה ותמצית וניל וטורפים.</li>
+            <li>מוסיפים קמח וסודה לשתייה ומערבבים עד שהקמח נבלע.</li>
+            <li>קוצצים את השוקולד לקוביות גסות ומוסיפים יחד עם העדדים.</li>
+            <li>מניחים את הבצק במקרר לחצי שעה עם כיסוי.</li>
+            <li>מחממים תנור ל-190 מעלות, יוצרים כדורים בגודל פינג-פונג ומניחים על תבנית עם נייר אפייה.</li>
+            <li>אופים במשך 12 דקות ומוציאים כשהעוגיות מעט רכות.</li>
+            <li>מצננים ומאחסנים בקופסה אטומה (עד שבוע).</li>
+          </ol>
+        </div>
+        <div class="section notes" id="cookiesNotes">
+          <h3>תגובות שלי</h3>
+          <p>החמאה מחוממת חצי דקה במיקרו.</p>
+          <p>טיפ: לחמם 10 שניות במיקרו לפני ההגשה.</p>
+        </div>
+      </section>
+
+      <section class="recipe" id="brownies">
+        <img src="images/brownies.jpg" alt="בראוניז קינדר" />
+        <h2 id="browniesTitle">בראוניז קינדר</h2>
+        <div class="section details" id="browniesDetails">
+          <p><strong>קטגוריה:</strong> קינוחים</p>
+          <p><strong>משך הכנה:</strong> 30 דקות</p>
+          <p><strong>משך בישול:</strong> 2:30 שעות</p>
+          <p><strong>משך כללי:</strong> 3 שעות</p>
+          <p><strong>תפוקה:</strong> עוגה אחת, 16 חתיכות</p>
+        </div>
+        <div class="section ingredients" id="browniesIngredients">
+          <h3>מרכיבים</h3>
+          <ul>
+            <li>200 גרם חמאה</li>
+            <li>150 גרם שוקולד מריר</li>
+            <li>150 גרם (12 אצבעות) אצבעות קינדר</li>
+            <li>3 ביצים + 1 חלמון</li>
+            <li>200 גרם סוכר</li>
+            <li>120 גרם קמח</li>
+            <li>2 כפות אבקת קקאו</li>
+            <li>7 אצבעות קינדר חתוכות</li>
+            <li>50 גרם שוקולד חלב קצוץ</li>
+            <li>3 כפות ממרח שוקולד נוגט או מחית קינדר</li>
+          </ul>
+        </div>
+        <div class="section instructions" id="browniesInstructions">
+          <h3>הוראות הכנה</h3>
+          <ol>
+            <li>ממיסים במיקרוגל חמאה, שוקולד מריר ואצבעות קינדר עד להמסה מלאה.</li>
+            <li>מקציפים ביצים, חלמון וסוכר עד לקבלת קצפת תפוחה ובהירה.</li>
+            <li>מערבבים פנימה את השוקולד המומס בעדינות עד לאיחוד קל.</li>
+            <li>מוסיפים קמח ואבקת קקאו ומקפלים בעדינות, ואז מוסיפים את אצבעות הקינדר והשוקולד הקצוץ.</li>
+            <li>מחממים תנור ל-175 מעלות, מרפדים תבנית (20×20) בנייר אפייה, ומכניסים לאפייה למשך 25-30 דקות.</li>
+            <li>מעבירים למקפיא, חותכים לקוביות ושומרים במקרר.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="recipe" id="pancakes">
+        <img src="images/pancakes.jpg" alt="פנקייקס" />
+        <h2 id="pancakesTitle">פנקייקס</h2>
+        <div class="section details" id="pancakesDetails">
+          <p><strong>קטגוריה:</strong> קינוחים</p>
+          <p><strong>משך הכנה:</strong> 10 דקות</p>
+          <p><strong>משך בישול:</strong> 10 דקות</p>
+          <p><strong>תפוקה:</strong> 8 יחידות</p>
+        </div>
+        <div class="section ingredients" id="pancakesIngredients">
+          <h3>מרכיבים</h3>
+          <ul>
+            <li>¾ כוס חלב</li>
+            <li>2 כפות חומץ לבן</li>
+            <li>1 כוס קמח</li>
+            <li>2 כפות סוכר</li>
+            <li>1 כפית אבקת אפיה</li>
+            <li>½ כפית סודה לשתיה</li>
+            <li>½ כפית מלח</li>
+            <li>1 ביצה</li>
+            <li>2 כפות חמאה מומסת</li>
+          </ul>
+        </div>
+        <div class="section instructions" id="pancakesInstructions">
+          <h3>הוראות הכנה</h3>
+          <ol>
+            <li>מערבבים חלב וחומץ ומניחים לעמוד 5 דקות.</li>
+            <li>מערבבים בקערה נפרדת קמח, סוכר, אבקת אפיה, סודה לשתיה ומלח.</li>
+            <li>מוסיפים ביצה וחמאה מומסת עד לקבלת בלילה חלקה.</li>
+            <li>מטגנים במחבת עם ספריי שמן עד להזהבה קלה.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="recipe" id="chicken-noodles">
+        <img src="images/chicken-noodles.jpg" alt="פילה עוף עם נודלס" />
+        <h2 id="chickenNoodlesTitle">פילה עוף עם נודלס</h2>
+        <div class="section details" id="chickenNoodlesDetails">
+          <p><strong>משך הכנה כולל:</strong> 30 דקות</p>
+          <p><strong>רמת קושי:</strong> כל אחד יכול</p>
+          <p><strong>תפוקה:</strong> מנה לשישה סועדים</p>
+        </div>
+        <div class="section ingredients" id="chickenNoodlesIngredients">
+          <h3>מצרכים</h3>
+          <div>
+            <h4>עיקרי:</h4>
+            <ul>
+              <li>1 ק"ג פילה עוף</li>
+              <li>400 גרם נודלס</li>
+              <li>6 כפות סויה</li>
+              <li>3 כפיות סודה לשתיה</li>
+            </ul>
+          </div>
+          <div>
+            <h4>לרוטב:</h4>
+            <ul>
+              <li>8 כפות סויה</li>
+              <li>2 כפות צ'ילי מתוק</li>
+              <li>3 כפות סוכר</li>
+              <li>2 כפות שמן שומשום</li>
+              <li>4 כפות רוטב טריאקי</li>
+            </ul>
+          </div>
+        </div>
+        <div class="section instructions" id="chickenNoodlesInstructions">
+          <h3>אופן ההכנה</h3>
+          <ol>
+            <li>חותכים את הפילה לצורות אחידות.</li>
+            <li>משרים את הפילה בסויה ובסודה לשתיה.</li>
+            <li>מערבבים את מרכיבי הרוטב בקערה נפרדת.</li>
+            <li>מבשלים את הנודלס במשך 2.5 דקות, מסננים את המים.</li>
+            <li>בווק עם מעט שמן, מקפיצים את קוביות העוף עד להזהבה.</li>
+            <li>מוסיפים את הנודלס והרוטב, מקפיצים עוד 2-3 דקות.</li>
+            <li>מגישים ומתענגים.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="recipe" id="macarons">
+        <img src="images/macarons.jpg" alt="מקרונים" />
+        <h2 id="macaronsTitle">מקרונים</h2>
+        <div class="section details" id="macaronsDetails">
+          <p><strong>משך כולל:</strong> כשעתיים וחצי</p>
+          <p><strong>רמת קושי:</strong> בינוני</p>
+          <p><strong>תפוקה:</strong> 20 מקרונים</p>
+        </div>
+        <div class="section ingredients" id="macaronsIngredients">
+          <h3>מרכיבים</h3>
+          <ul>
+            <li>100 גרם או 1/2 כוס סוכר לבן</li>
+            <li>76 גרם חלבונים</li>
+            <li>100 גרם שקדים תחונים</li>
+            <li>100 גרם או 1 שקית אבקת סוכר</li>
+            <li>צבע מאכל (אופציונלי)</li>
+          </ul>
+          <h4>לקרם:</h4>
+          <ul>
+            <li>200 גרם שוקולד לבן</li>
+            <li>60 מ"ל שמנת להקצפה (38%)</li>
+            <li>1 כפית תמצית וניל</li>
+          </ul>
+        </div>
+        <div class="section instructions" id="macaronsInstructions">
+          <h3>אופן ההכנה</h3>
+          <ol>
+            <li>מכניסים את הסוכר והחלבונים לקערת מיקסר.</li>
+            <li>מרתיחים סיר עם מים, מנמיכים את האש ומניחים את הקערה עד שהסוכר נמס תוך ערבוב מתמיד.</li>
+            <li>מסירים מהאש ומקציפים עד לקבלת קצף יציב (לפחות 5 דקות).</li>
+            <li>טוחנים במעבד מזון את אבקת האפייה והשקדים התחונים.</li>
+            <li>מוסיפים צבע מאכל ומקפלים בעדינות עד לקבלת מרקם סמיך ואחיד.</li>
+            <li>מזלפים לעיגובים בקוטר 3-4 ס"מ על תבנית עם נייר אפייה בגובה כ-1 ס"מ.</li>
+            <li>מכים את התבנית להסרת בועות אוויר.</li>
+            <li>מניחים להתייבש כמה דקות, מחממים תנור ל-150 מעלות (מצב טורבו) ואופים במשך 12 דקות תוך סיבוב המגש באמצע.</li>
+            <li>מצננים בטמפרטורת החדר ומסירים בעדינות; במידת הצורך אופים עוד כ-2 דקות.</li>
+            <li>לקרם, ממיסים במיקרו את השוקולד הלבן, השמנת והתמצית וניל עד לקבלת מרקם קרמי.</li>
+            <li>מתאימים זוגות מקרונים, מזלפים קרם וסוגרים לסנדוויץ׳.</li>
+            <li>מקררים ללילה ומוציאים כמה שעות לפני ההגשה.</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p id="footerText">-----Shared with Cookmate-----</p>
+    </footer>
+
+    <script>
+      // Define translations for Hebrew (he) and English (en)
+      const translations = {
+        he: {
+          siteTitle: "Manchie In The Kitchen",
+          siteSubtitle: "כאן תמצאו את המתכונים שאני הכי אוהב להכין - עם תמונות, הוראות ברורות ואהבה לאוכל.",
+          searchPlaceholder: "חפש מתכונים...",
+          searchButton: "חפש מתכון",
+          searchFound: "נמצא {count} מתכונים",
+          searchNotFound: "אין תוצאות \"{query}\"",
+          resetButton: "חזור לכל המתכונים",
+          cookiesTitle: "עוגיות שוקולד צ'יפס עם עדדים",
+          browniesTitle: "בראוניז קינדר",
+          pancakesTitle: "פנקייקס",
+          chickenNoodlesTitle: "פילה עוף עם נודלס",
+          macaronsTitle: "מקרונים",
+          cookiesDetails: "<p><strong>קטגוריה:</strong> קינוחים</p><p><strong>משך הכנה:</strong> 30-60 דקות</p><p><strong>משך בישול:</strong> שעה - שעה וחצי</p><p><strong>משך כללי:</strong> כשעתיים</p><p><strong>תפוקה:</strong> כ-40 עוגיות</p>",
+          cookiesIngredients: `<ul>
+              <li>200 גרם חמאה</li>
+              <li>200 גרם (1 כוס) סוכר לבן</li>
+              <li>50 גרם (1/4 כוס) סוכר חום</li>
+              <li>1 ביצה L</li>
+              <li>1 כפית תמצית וניל</li>
+              <li>300 גרם (2 כוסות + כף גדושה) קמח לבן</li>
+              <li>1 כפית סודה לשתייה</li>
+              <li>50 גרם עדדים צבעוניים (לא חובה)</li>
+              <li>2 וחצי טבלאות שוקולד</li>
+            </ul>`,
+          cookiesInstructions: `<ol>
+              <li>ממיסים את החמאה עד שהיא רכה.</li>
+              <li>מערבבים את הסוכר הלבן והחום וטורפים היטב.</li>
+              <li>מוסיפים ביצה ותמצית וניל וטורפים.</li>
+              <li>מוסיפים קמח וסודה לשתייה ומערבבים עד שהקמח נבלע.</li>
+              <li>קוצצים את השוקולד לקוביות גסות ומוסיפים יחד עם העדדים.</li>
+              <li>מניחים את הבצק במקרר לחצי שעה עם כיסוי.</li>
+              <li>מחממים תנור ל-190 מעלות, יוצרים כדורים בגודל פינג-פונג ומניחים על תבנית עם נייר אפייה.</li>
+              <li>אופים במשך 12 דקות ומוציאים כשהעוגיות מעט רכות.</li>
+              <li>מצננים ומאחסנים בקופסה אטומה (עד שבוע).</li>
+            </ol>`,
+          cookiesNotes: "<h3>תגובות שלי</h3><p>החמאה מחוממת חצי דקה במיקרו.</p><p>טיפ: לחמם 10 שניות במיקרו לפני ההגשה.</p>",
+          browniesDetails: "<p><strong>קטגוריה:</strong> קינוחים</p><p><strong>משך הכנה:</strong> 30 דקות</p><p><strong>משך בישול:</strong> 2:30 שעות</p><p><strong>משך כללי:</strong> 3 שעות</p><p><strong>תפוקה:</strong> עוגה אחת, 16 חתיכות</p>",
+          browniesIngredients: `<ul>
+              <li>200 גרם חמאה</li>
+              <li>150 גרם שוקולד מריר</li>
+              <li>150 גרם (12 אצבעות) אצבעות קינדר</li>
+              <li>3 ביצים + 1 חלמון</li>
+              <li>200 גרם סוכר</li>
+              <li>120 גרם קמח</li>
+              <li>2 כפות אבקת קקאו</li>
+              <li>7 אצבעות קינדר חתוכות</li>
+              <li>50 גרם שוקולד חלב קצוץ</li>
+              <li>3 כפות ממרח שוקולד נוגט או מחית קינדר</li>
+            </ul>`,
+          browniesInstructions: `<ol>
+              <li>ממיסים במיקרוגל חמאה, שוקולד מריר ואצבעות קינדר עד להמסה מלאה.</li>
+              <li>מקציפים ביצים, חלמון וסוכר עד לקבלת קצפת תפוחה ובהירה.</li>
+              <li>מערבבים פנימה את השוקולד המומס בעדינות עד לאיחוד קל.</li>
+              <li>מוסיפים קמח ואבקת קקאו ומקפלים בעדינות, ואז מוסיפים את אצבעות הקינדר והשוקולד הקצוץ.</li>
+              <li>מחממים תנור ל-175 מעלות, מרפדים תבנית (20×20) בנייר אפייה, ומכניסים לאפייה למשך 25-30 דקות.</li>
+              <li>מעבירים למקפיא, חותכים לקוביות ושומרים במקרר.</li>
+            </ol>`,
+          pancakesDetails: "<p><strong>קטגוריה:</strong> קינוחים</p><p><strong>משך הכנה:</strong> 10 דקות</p><p><strong>משך בישול:</strong> 10 דקות</p><p><strong>תפוקה:</strong> 8 יחידות</p>",
+          pancakesIngredients: `<ul>
+              <li>¾ כוס חלב</li>
+              <li>2 כפות חומץ לבן</li>
+              <li>1 כוס קמח</li>
+              <li>2 כפות סוכר</li>
+              <li>1 כפית אבקת אפיה</li>
+              <li>½ כפית סודה לשתיה</li>
+              <li>½ כפית מלח</li>
+              <li>1 ביצה</li>
+              <li>2 כפות חמאה מומסת</li>
+            </ul>`,
+          pancakesInstructions: `<ol>
+              <li>מערבבים חלב וחומץ ומניחים לעמוד 5 דקות.</li>
+              <li>מערבבים בקערה נפרדת קמח, סוכר, אבקת אפיה, סודה לשתיה ומלח.</li>
+              <li>מוסיפים ביצה וחמאה מומסת עד לקבלת בלילה חלקה.</li>
+              <li>מטגנים במחבת עם ספריי שמן עד להזהבה קלה.</li>
+            </ol>`,
+          chickenNoodlesDetails: "<p><strong>משך הכנה כולל:</strong> 30 דקות</p><p><strong>רמת קושי:</strong> כל אחד יכול</p><p><strong>תפוקה:</strong> מנה לשישה סועדים</p>",
+          chickenNoodlesIngredients: `<div>
+              <h4>עיקרי:</h4>
+              <ul>
+                <li>1 ק"ג פילה עוף</li>
+                <li>400 גרם נודלס</li>
+                <li>6 כפות סויה</li>
+                <li>3 כפיות סודה לשתיה</li>
+              </ul>
+            </div>
+            <div>
+              <h4>לרוטב:</h4>
+              <ul>
+                <li>8 כפות סויה</li>
+                <li>2 כפות צ'ילי מתוק</li>
+                <li>3 כפות סוכר</li>
+                <li>2 כפות שמן שומשום</li>
+                <li>4 כפות רוטב טריאקי</li>
+              </ul>
+            </div>`,
+          chickenNoodlesInstructions: `<ol>
+              <li>חותכים את הפילה לצורות אחידות.</li>
+              <li>משרים את הפילה בסויה ובסודה לשתיה.</li>
+              <li>מערבבים את מרכיבי הרוטב בקערה נפרדת.</li>
+              <li>מבשלים את הנודלס במשך 2.5 דקות, מסננים את המים.</li>
+              <li>בווק עם מעט שמן, מקפיצים את קוביות העוף עד להזהבה.</li>
+              <li>מוסיפים את הנודלס והרוטב, מקפיצים עוד 2-3 דקות.</li>
+              <li>מגישים ומתענגים.</li>
+            </ol>`,
+          macaronsDetails: "<p><strong>משך כולל:</strong> כשעתיים וחצי</p><p><strong>רמת קושי:</strong> בינוני</p><p><strong>תפוקה:</strong> 20 מקרונים</p>",
+          macaronsIngredients: `<ul>
+              <li>100 גרם או 1/2 כוס סוכר לבן</li>
+              <li>76 גרם חלבונים</li>
+              <li>100 גרם שקדים תחונים</li>
+              <li>100 גרם או 1 שקית אבקת סוכר</li>
+              <li>צבע מאכל (אופציונלי)</li>
+            </ul>
+            <h4>לקרם:</h4>
+            <ul>
+              <li>200 גרם שוקולד לבן</li>
+              <li>60 מ"ל שמנת להקצפה (38%)</li>
+              <li>1 כפית תמצית וניל</li>
+            </ul>`,
+          macaronsInstructions: `<ol>
+              <li>מכניסים את הסוכר והחלבונים לקערת מיקסר.</li>
+              <li>מרתיחים סיר עם מים, מנמיכים את האש ומניחים את הקערה עד שהסוכר נמס תוך ערבוב מתמיד.</li>
+              <li>מסירים מהאש ומקציפים עד לקבלת קצף יציב (לפחות 5 דקות).</li>
+              <li>טוחנים במעבד מזון את אבקת האפייה והשקדים התחונים.</li>
+              <li>מוסיפים צבע מאכל ומקפלים בעדינות עד לקבלת מרקם סמיך ואחיד.</li>
+              <li>מזלפים לעיגובים בקוטר 3-4 ס"מ על תבנית עם נייר אפייה בגובה כ-1 ס"מ.</li>
+              <li>מכים את התבנית להסרת בועות אוויר.</li>
+              <li>מניחים להתייבש כמה דקות, מחממים תנור ל-150 מעלות (מצב טורבו) ואופים במשך 12 דקות תוך סיבוב המגש באמצע.</li>
+              <li>מצננים בטמפרטורת החדר ומסירים בעדינות; במידת הצורך אופים עוד כ-2 דקות.</li>
+              <li>לקרם, ממיסים במיקרו את השוקולד הלבן, השמנת והתמצית וניל עד לקבלת מרקם קרמי.</li>
+              <li>מתאימים זוגות מקרונים, מזלפים קרם וסוגרים לסנדוויץ׳.</li>
+              <li>מקררים ללילה ומוציאים כמה שעות לפני ההגשה.</li>
+            </ol>`,
+          footerText: "-----Shared with Cookmate-----"
+        },
+        en: {
+          siteTitle: "Manchie In The Kitchen",
+          siteSubtitle: "Here you can find my favorite recipes – with pictures, clear instructions, and a love of food.",
+          searchPlaceholder: "Search Recipes...",
+          searchButton: "Search Recipe",
+          searchFound: "Found {count} recipes",
+          searchNotFound: "No results \"{query}\"",
+          resetButton: "Show All Recipes",
+          cookiesTitle: "Chocolate Chip Cookies with Lentils",
+          browniesTitle: "Kinder Brownies",
+          pancakesTitle: "Pancakes",
+          chickenNoodlesTitle: "Chicken Fillet with Noodles",
+          macaronsTitle: "Macarons",
+          cookiesDetails: "<p><strong>Category:</strong> Dessert</p><p><strong>Prep Time:</strong> 30-60 minutes</p><p><strong>Cooking Time:</strong> 1 to 1 1/2 hours</p><p><strong>Total Time:</strong> About 2 hours</p><p><strong>Yield:</strong> About 40 cookies</p>",
+          cookiesIngredients: `<ul>
+              <li>200g butter</li>
+              <li>200g (1 cup) white sugar</li>
+              <li>50g (1/4 cup) brown sugar</li>
+              <li>1 large egg</li>
+              <li>1 tsp vanilla extract</li>
+              <li>300g (2 cups + 1 heaping tbsp) flour</li>
+              <li>1 level tsp baking soda</li>
+              <li>50g mixed lentils (optional)</li>
+              <li>2 1/2 tbsp chocolate</li>
+            </ul>`,
+          cookiesInstructions: `<ol>
+              <li>Melt the butter until soft.</li>
+              <li>Mix white and brown sugars and beat well.</li>
+              <li>Add the egg and vanilla; beat until smooth.</li>
+              <li>Add flour and baking soda, stirring until the flour is fully incorporated.</li>
+              <li>Chop the chocolate into cubes and fold in with the lentils.</li>
+              <li>Chill the dough for 30 minutes (cover it).</li>
+              <li>Preheat the oven to 190°C, form ping-pong sized balls, and place on a parchment-lined tray.</li>
+              <li>Bake for 12 minutes until the cookies are slightly soft.</li>
+              <li>Cool and store in an airtight container (up to one week).</li>
+            </ol>`,
+          cookiesNotes: "<h3>My Notes</h3><p>Microwave the butter for 30 seconds.</p><p>Tip: Microwave for 10 seconds before serving.</p>",
+          browniesDetails: "<p><strong>Category:</strong> Dessert</p><p><strong>Prep Time:</strong> 30 minutes</p><p><strong>Cooking Time:</strong> 2:30 hours</p><p><strong>Total Time:</strong> 3 hours</p><p><strong>Yield:</strong> 1 cake, 16 pieces</p>",
+          browniesIngredients: `<ul>
+              <li>200g butter</li>
+              <li>150g dark chocolate</li>
+              <li>150g Kinder chocolate bars (approx. 12 pieces)</li>
+              <li>3 eggs + 1 egg yolk</li>
+              <li>200g sugar</li>
+              <li>120g flour</li>
+              <li>2 tbsp cocoa powder</li>
+              <li>7 Kinder bars cubed</li>
+              <li>50g chopped milk chocolate</li>
+              <li>3 tbsp nougat chocolate spread</li>
+            </ul>`,
+          browniesInstructions: `<ol>
+              <li>Melt the butter, dark chocolate, and Kinder pieces in the microwave until fully melted.</li>
+              <li>Beat eggs, egg yolk, and sugar until light and fluffy.</li>
+              <li>Fold in the melted chocolate.</li>
+              <li>Mix in flour and cocoa powder, then fold in Kinder cubes and chopped milk chocolate.</li>
+              <li>Preheat oven to 175°C, line a 20×20 cm pan, pour in the batter, and bake for 25-30 minutes.</li>
+              <li>Chill for 2 hours, cut into cubes, and store in the fridge.</li>
+            </ol>`,
+          pancakesDetails: "<p><strong>Category:</strong> Dessert</p><p><strong>Prep Time:</strong> 10 minutes</p><p><strong>Cooking Time:</strong> 10 minutes</p><p><strong>Yield:</strong> 8 pieces</p>",
+          pancakesIngredients: `<ul>
+              <li>¾ cup milk</li>
+              <li>2 tbsp white vinegar</li>
+              <li>1 cup flour</li>
+              <li>2 tbsp sugar</li>
+              <li>1 tsp baking powder</li>
+              <li>½ tsp baking soda</li>
+              <li>½ tsp salt</li>
+              <li>1 egg</li>
+              <li>2 tbsp melted butter</li>
+            </ul>`,
+          pancakesInstructions: `<ol>
+              <li>Mix milk and vinegar; let stand for 5 minutes.</li>
+              <li>Combine flour, sugar, baking powder, baking soda, and salt in another bowl.</li>
+              <li>Add egg and melted butter; mix until smooth.</li>
+              <li>Cook on a lightly oiled skillet until golden.</li>
+            </ol>`,
+          chickenNoodlesDetails: "<p><strong>Total Prep Time:</strong> 30 minutes</p><p><strong>Difficulty:</strong> Easy</p><p><strong>Yield:</strong> Serves 6</p>",
+          chickenNoodlesIngredients: `<div>
+              <h4>Main:</h4>
+              <ul>
+                <li>1kg chicken fillet</li>
+                <li>400g noodles</li>
+                <li>6 tbsp soy sauce</li>
+                <li>3 tsp baking soda</li>
+              </ul>
+            </div>
+            <div>
+              <h4>For the sauce:</h4>
+              <ul>
+                <li>8 tbsp soy sauce</li>
+                <li>2 tbsp sweet chili sauce</li>
+                <li>3 tbsp sugar</li>
+                <li>2 tbsp sesame oil</li>
+                <li>4 tbsp teriyaki sauce</li>
+              </ul>
+            </div>`,
+          chickenNoodlesInstructions: `<ol>
+              <li>Cut the chicken into evenly sized pieces.</li>
+              <li>Marinate the chicken in soy sauce and baking soda.</li>
+              <li>Mix the sauce ingredients in a separate bowl.</li>
+              <li>Cook the noodles for 2.5 minutes; drain.</li>
+              <li>Stir-fry the chicken in a wok with a little oil until golden.</li>
+              <li>Add the noodles and sauce; stir-fry for an additional 2-3 minutes.</li>
+              <li>Serve and enjoy.</li>
+            </ol>`,
+          macaronsDetails: "<p><strong>Total Time:</strong> About 2 hours 30 minutes</p><p><strong>Difficulty:</strong> Intermediate</p><p><strong>Yield:</strong> 20 macarons</p>",
+          macaronsIngredients: `<ul>
+              <li>100g or 1/2 cup white sugar</li>
+              <li>76g egg whites</li>
+              <li>100g blanched almonds</li>
+              <li>100g or 1 packet powdered sugar</li>
+              <li>Food coloring (optional)</li>
+            </ul>
+            <h4>For the cream:</h4>
+            <ul>
+              <li>200g white chocolate</li>
+              <li>60ml heavy cream (38%)</li>
+              <li>1 tsp vanilla extract</li>
+            </ul>`,
+          macaronsInstructions: `<ol>
+              <li>Put sugar and egg whites in a mixer bowl.</li>
+              <li>Heat gently over a water bath while stirring until the sugar dissolves.</li>
+              <li>Remove from heat and whip until a very stable meringue forms (min. 5 minutes).</li>
+              <li>Grind baking powder and blanched almonds in a food processor.</li>
+              <li>Add food coloring briefly and fold in the almond mixture until thick and smooth.</li>
+              <li>Pipe 3-4 cm rounds onto a parchment-lined tray (raised about 1 cm).</li>
+              <li>Tap the tray lightly to remove air bubbles.</li>
+              <li>Let sit a few minutes to dry; if still sticky, let dry longer.</li>
+              <li>Preheat oven to 150°C (fan mode) and bake for 12 minutes, rotating the tray halfway.</li>
+              <li>Cool at room temperature and gently remove; if needed, bake an extra 2 minutes.</li>
+              <li>For the cream, microwave the white chocolate, heavy cream, and vanilla until smooth.</li>
+              <li>Match pairs of macarons, pipe cream on one, and sandwich with the other.</li>
+              <li>Refrigerate overnight and bring to room temperature before serving.</li>
+            </ol>`,
+          footerText: "-----Shared with Cookmate-----"
+        }
+      };
+
+      // Function to update site's language details
+      function setLanguage(lang) {
+        document.getElementById("siteTitle").innerText = translations[lang].siteTitle;
+        document.getElementById("siteSubtitle").innerText = translations[lang].siteSubtitle;
+        document.getElementById("recipeSearch").placeholder = translations[lang].searchPlaceholder;
+        document.getElementById("searchButton").innerText = translations[lang].searchButton;
+        document.getElementById("resetButton").innerText = translations[lang].resetButton;
+  
+        // Update recipe content
+        document.getElementById("cookiesTitle").innerText = translations[lang].cookiesTitle;
+        document.getElementById("cookiesDetails").innerHTML = translations[lang].cookiesDetails;
+        document.getElementById("cookiesIngredients").innerHTML =
+          "<h3>" + (lang === "en" ? "Ingredients" : "מרכיבים") + "</h3>" + translations[lang].cookiesIngredients;
+        document.getElementById("cookiesInstructions").innerHTML = translations[lang].cookiesInstructions;
+        document.getElementById("cookiesNotes").innerHTML = translations[lang].cookiesNotes;
+  
+        document.getElementById("browniesTitle").innerText = translations[lang].browniesTitle;
+        document.getElementById("browniesDetails").innerHTML = translations[lang].browniesDetails;
+        document.getElementById("browniesIngredients").innerHTML =
+          "<h3>" + (lang === "en" ? "Ingredients" : "מרכיבים") + "</h3>" + translations[lang].browniesIngredients;
+        document.getElementById("browniesInstructions").innerHTML = translations[lang].browniesInstructions;
+  
+        document.getElementById("pancakesTitle").innerText = translations[lang].pancakesTitle;
+        document.getElementById("pancakesDetails").innerHTML = translations[lang].pancakesDetails;
+        document.getElementById("pancakesIngredients").innerHTML =
+          "<h3>" + (lang === "en" ? "Ingredients" : "מרכיבים") + "</h3>" + translations[lang].pancakesIngredients;
+        document.getElementById("pancakesInstructions").innerHTML = translations[lang].pancakesInstructions;
+  
+        document.getElementById("chickenNoodlesTitle").innerText = translations[lang].chickenNoodlesTitle;
+        document.getElementById("chickenNoodlesDetails").innerHTML = translations[lang].chickenNoodlesDetails;
+        document.getElementById("chickenNoodlesIngredients").innerHTML =
+          "<h3>" + (lang === "en" ? "Ingredients" : "מצרכים") + "</h3>" + translations[lang].chickenNoodlesIngredients;
+        document.getElementById("chickenNoodlesInstructions").innerHTML = translations[lang].chickenNoodlesInstructions;
+  
+        document.getElementById("macaronsTitle").innerText = translations[lang].macaronsTitle;
+        document.getElementById("macaronsDetails").innerHTML = translations[lang].macaronsDetails;
+        document.getElementById("macaronsIngredients").innerHTML =
+          "<h3>" + (lang === "en" ? "Ingredients" : "מרכיבים") + "</h3>" + translations[lang].macaronsIngredients;
+        document.getElementById("macaronsInstructions").innerHTML = translations[lang].macaronsInstructions;
+  
+        document.getElementById("footerText").innerText = translations[lang].footerText;
+      }
+  
+      // Function to filter and display recipes based on search query.
+      function performSearch() {
+        const lang = document.getElementById("langSelect").value;
+        const searchText = document.getElementById("recipeSearch").value.toLowerCase();
+        const recipes = document.querySelectorAll("main .recipe");
+        let countVisible = 0;
+  
+        recipes.forEach(recipe => {
+          const title = recipe.querySelector("h2").innerText.toLowerCase();
+          if (searchText === "" || title.includes(searchText)) {
+            recipe.style.display = "";
+            countVisible++;
+          } else {
+            recipe.style.display = "none";
+          }
+        });
+  
+        const feedback = document.getElementById("searchFeedback");
+        if (searchText === "") {
+          feedback.innerText = "";
+        } else if (countVisible > 0) {
+          feedback.innerText = translations[lang].searchFound.replace("{count}", countVisible);
+        } else {
+          feedback.innerText = translations[lang].searchNotFound.replace("{query}", document.getElementById("recipeSearch").value);
+        }
+  
+        // Show the reset button if search is active
+        document.getElementById("resetButton").style.display = searchText === "" ? "none" : "inline-block";
+      }
+  
+      // Reset function to show all recipes and clear search.
+      function resetSearch() {
+        document.getElementById("recipeSearch").value = "";
+        const recipes = document.querySelectorAll("main .recipe");
+        recipes.forEach(recipe => {
+          recipe.style.display = "";
+        });
+        document.getElementById("searchFeedback").innerText = "";
+        document.getElementById("resetButton").style.display = "none";
+      }
+  
+      // Event Listeners
+      document.getElementById("searchButton").addEventListener("click", performSearch);
+      document.getElementById("resetButton").addEventListener("click", resetSearch);
+      document.getElementById("langSelect").addEventListener("change", function() {
+        setLanguage(this.value);
+      });
+  
+      // Initialize page with default language.
+      setLanguage(document.getElementById("langSelect").value);
+    </script>
+  </body>
+</html>
